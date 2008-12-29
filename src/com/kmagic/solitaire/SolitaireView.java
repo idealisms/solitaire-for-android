@@ -159,6 +159,7 @@ public class SolitaireView extends View {
     mGameStarted = false;
   }
 
+  public Context GetContext() { return mContext; }
   public SharedPreferences GetSettings() { return ((Solitaire)mContext).GetSettings(); }
   public DrawMaster GetDrawMaster() { return mDrawMaster; }
   public Rules GetRules() { return mRules; }

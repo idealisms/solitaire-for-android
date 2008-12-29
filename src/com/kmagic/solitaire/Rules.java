@@ -18,6 +18,7 @@ package com.kmagic.solitaire;
 import android.os.Bundle;
 import android.util.Log;
 import android.graphics.Canvas;
+import android.widget.Toast;
 import java.lang.InterruptedException;
 import java.lang.Thread;
 import java.util.Stack;
@@ -546,12 +547,19 @@ class Spider extends Rules {
         mEventPoster.PostEvent(mView, EVENT_DEAL_NEXT, mCardAnchor[anchor.GetNumber()+1]);
       }
     } else if (event == EVENT_DEAL) {
+      String toastText;
       if (mCardAnchor[10].GetCount() > 0) {
+        toastText = mView.GetContext().getResources().getString(R.string.deals_left,
+            (mCardAnchor[10].GetCount() / 10) - 1);
+
         int count = mCardAnchor[10].GetCount() > 10 ? 10 : mCardAnchor[10].GetCount();
         mAnimateCard.MoveCard(mCardAnchor[10].PopCard(), mCardAnchor[0]);
         mMoveHistory.push(new Move(10, 0, count-1, 1, false, false));
         mStillDealing = true;
+      } else {
+        toastText = mView.GetContext().getResources().getString(R.string.no_deals_left);
       }
+      Toast.makeText(mView.GetContext(), toastText, Toast.LENGTH_SHORT).show();
     } else if (event == EVENT_DEAL_NEXT) {
       if (mCardAnchor[10].GetCount() > 0 && anchor.GetNumber() < 10) {
         mAnimateCard.MoveCard(mCardAnchor[10].PopCard(), anchor);
@@ -836,5 +844,3 @@ class EventPoster implements Runnable {
     }
   }
 }
-
-

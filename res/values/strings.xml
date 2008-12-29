@@ -43,6 +43,8 @@
     <string name="display_options">Display Options</string>
     <string name="normal_cards">Normal Card Art</string>
     <string name="big_cards">Large Card Art</string>
+    <string name="deals_left">Deals left: %d</string>
+    <string name="no_deals_left">No deals left</string>
     <string name="help_text">
 Moving:\n
 Single Card: Drag the card.\n
