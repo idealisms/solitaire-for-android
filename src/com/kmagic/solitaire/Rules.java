@@ -29,6 +29,7 @@ public abstract class Rules {
   public static final int SOLITAIRE = 1;
   public static final int SPIDER = 2;
   public static final int FREECELL = 3;
+  public static final int BAKERS = 4;
 
   public static final int EVENT_INVALID = -1;
   public static final int EVENT_DEAL = 1;
@@ -95,6 +96,9 @@ public abstract class Rules {
         break;
       case FREECELL:
         ret = new Freecell();
+        break;
+      case BAKERS:
+        ret = new Bakers();
         break;
     }
 
@@ -600,7 +604,7 @@ class Freecell extends Rules {
   public void Init(Bundle map) {
     mIgnoreEvents = true;
 
-    // Thirteen total anchors for regular solitaire
+    // Sixteen total anchors for freecell
     mCardCount = 52;
     mCardAnchorCount = 16;
     mCardAnchor = new CardAnchor[mCardAnchorCount];
@@ -790,6 +794,72 @@ class Freecell extends Rules {
     return "Freecell";
   }
 }
+
+class Bakers extends Freecell {
+  public void Init(Bundle map) {
+    mIgnoreEvents = true;
+    mCardCount = 52;
+    mCardAnchorCount = 16;
+    mCardAnchor = new CardAnchor[mCardAnchorCount];
+
+    // Top anchors for holding cards
+    for (int i = 0; i < 4; i++) {
+      mCardAnchor[i] = CardAnchor.CreateAnchor(CardAnchor.FREECELL_HOLD, i, this);
+    }
+
+    // Top anchors for sinking cards
+    for (int i = 0; i < 4; i++) {
+      mCardAnchor[i+4] = CardAnchor.CreateAnchor(CardAnchor.SEQ_SINK, i+4, this);
+    }
+
+    for (int i = 0; i < 8; i++) {
+      mCardAnchor[i+8] = CardAnchor.CreateAnchor(CardAnchor.BAKERS_STACK, i+8,
+                                                 this);
+    }
+
+    if (map != null) {
+      // Do some assertions, default to a new game if we find an invalid state
+      if (map.getInt("cardAnchorCount") == 16 &&
+          map.getInt("cardCount") == 52) {
+        int[] cardCount = map.getIntArray("anchorCardCount");
+        int[] hiddenCount = map.getIntArray("anchorHiddenCount");
+        int[] value = map.getIntArray("value");
+        int[] suit = map.getIntArray("suit");
+        int cardIdx = 0;
+
+        for (int i = 0; i < 16; i++) {
+          for (int j = 0; j < cardCount[i]; j++, cardIdx++) {
+            Card card = new Card(value[cardIdx], suit[cardIdx]);
+            mCardAnchor[i].AddCard(card);
+          }
+          mCardAnchor[i].SetHiddenCount(hiddenCount[i]);
+        }
+
+        mIgnoreEvents = false;
+        // Return here so an invalid save state will result in a new game
+        return;
+      }
+    }
+
+    mDeck = new Deck(1);
+    while (!mDeck.Empty()) {
+      for (int i = 0; i < 8 && !mDeck.Empty(); i++) {
+        mCardAnchor[i+8].AddCard(mDeck.PopCard());
+      }
+    }
+    mIgnoreEvents = false;
+  }
+
+  @Override
+  public String GetGameTypeString() {
+    return "Baker's";
+  }
+  @Override
+  public String GetPrettyGameTypeString() {
+    return "Baker's Game";
+  }
+}
+
 
 class EventPoster implements Runnable {
   private int mEvent;

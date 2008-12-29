@@ -29,6 +29,7 @@ class CardAnchor {
   public static final int SPIDER_STACK = 5;
   public static final int FREECELL_STACK = 6;
   public static final int FREECELL_HOLD = 7;
+  public static final int BAKERS_STACK = 8;
 
   private int mNumber;
   protected Rules mRules;
@@ -68,6 +69,9 @@ class CardAnchor {
         break;
       case FREECELL_HOLD:
         ret = new FreecellHold();
+        break;
+      case BAKERS_STACK:
+        ret = new BakersStack();
         break;
     }
     ret.SetRules(rules);
@@ -701,4 +705,48 @@ class FreecellHold extends CardAnchor {
     return false;
   }
 
+}
+
+class BakersStack extends FreecellStack {
+  @Override
+  public boolean CanDropCard(MoveCard moveCard, int close) {
+
+    Card card = moveCard.GetTopCard();
+    float x = card.GetX() + Card.WIDTH/2;
+    float y = card.GetY() + Card.HEIGHT/2;
+    Card topCard = mCardCount > 0 ? mCard[mCardCount - 1] : null;
+    float my = mCardCount > 0 ? topCard.GetY() : mY;
+
+    if (IsOverCard(x, y, close)) {
+      if (topCard == null) {
+        if (mRules.CountFreeSpaces() >= moveCard.GetCount()) {
+          return true;
+        }
+      } else if (card.GetSuit() == topCard.GetSuit() &&
+                 card.GetValue() == topCard.GetValue() - 1) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @Override
+  public int GetMovableCount() {
+    if (mCardCount < 2)
+      return mCardCount;
+
+    int retCount = 1;
+    int maxMoveCount = mRules.CountFreeSpaces() + 1;
+    int suit = mCard[mCardCount-1].GetSuit();
+
+    for (int i = mCardCount - 2; i >= 0 && retCount < maxMoveCount; i--, retCount++) {
+      if (mCard[i].GetSuit() != suit ||
+          mCard[i].GetValue() != mCard[i+1].GetValue() + 1) {
+        break;
+      }
+    }
+
+    return retCount;
+  }
 }
