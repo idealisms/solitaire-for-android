@@ -16,7 +16,7 @@
   -->  
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.kmagic.solitaire"
-      android:versionCode="401"
+      android:versionCode="402"
       android:versionName="1.9t">
     <application android:icon="@drawable/solitaire_icon" android:label="@string/app_name">
         <activity android:name=".Solitaire"
