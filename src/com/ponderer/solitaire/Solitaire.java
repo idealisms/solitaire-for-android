@@ -110,8 +110,6 @@ public class Solitaire extends Activity {
 
     menu.add(0, MENU_RESTART, 0, R.string.menu_restart);
     menu.add(0, MENU_OPTIONS, 0, R.string.menu_options);
-    menu.add(0, MENU_SAVE_QUIT, 0, R.string.menu_save_quit);
-    menu.add(0, MENU_QUIT, 0, R.string.menu_quit);
     menu.add(0, MENU_STATS, 0, R.string.menu_stats);
     menu.add(0, MENU_HELP, 0, R.string.menu_help);
     return true;
